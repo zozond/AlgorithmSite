@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <%- include('../partials/header') %>
+</head>
+
+<body>
+  <div class="wrapped">
+    <%- include('../partials/nav') %>
+
+    <div class="container" style="height: auto !important;">
+      <div class="row">
+        <div class="col-md-10">
+          <ul class="nav nav-pills" style="margin-bottom:20px;">
+            <li role="presentation" class="active"> <a href="#">문제</a></li>
+            <li role="presentation"> <a href="#">단계</a></li>
+            <li role="presentation"> <a href="#">분류</a></li>
+            <li role="presentation"> <a href="#">순위</a></li>
+          </ul>
+        </div>
+
+        <div class="col-md-2">
+          <form class="form-inline">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+          <thead>
+            <th> 문제번호 </th>
+            <th> 제목     </th>
+            <th> 정보     </th>
+            <th> 제출     </th>
+            <th> 정답비율 </th>
+          </thead>
+          <tbody>
+            <% if(problem == null || problem.length == 0){ %>
+              <tr>
+                <td colspan="5"> There is no data to show :( </td>
+              </tr>
+              <% } else { %>
+              <% problem.forEach((problem) => { %>
+              <tr>
+                <td>  </td>
+                <td>
+                  <a href="/problem/<%= problem.problemName %>">
+                    <div class="ellipsis"><%= problem.problemName %></div>
+                  </a>
+                </td>
+                <td>
+                  <div class="ellipsis"><%= problem.problemContent %></div>
+                </td>
+                <td>  </td>
+                <td>  </td>
+              </tr>
+              <% }) %>
+              <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+</body>
+</html>

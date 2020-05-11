@@ -1,0 +1,15 @@
+body {
+  text-align: center;
+  font-family: 'Open Sans', sans-serif;
+}
+ul {
+  list-style:none;
+  margin:0;
+  padding:0;
+}
+li {
+  margin: 0 0 0 0;
+  padding: 0 0 0 0;
+  border : 0;
+  float: left;
+}

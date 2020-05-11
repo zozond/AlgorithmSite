@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <%- include('../partials/header') %>
+    <script>
+        function check(obj){
+            var list1 = document.getElementById("list1");
+            var list2 = document.getElementById("list2");
+            var list3 = document.getElementById("list3");
+            var list4 = document.getElementById("list4");
+
+            if(obj == "list1"){
+                list1.classList.add('active')
+                list2.classList.remove('active')
+                list3.classList.remove('active')
+                list4.classList.remove('active')
+            }else if(obj == "list2"){
+                list1.classList.remove('active')
+                list2.classList.add('active')
+                list3.classList.remove('active')
+                list4.classList.remove('active')
+            }else if(obj == "list3"){
+                list1.classList.remove('active')
+                list2.classList.remove('active')
+                list3.classList.add('active')
+                list4.classList.remove('active')
+            }else{
+                list1.classList.remove('active')
+                list2.classList.remove('active')
+                list3.classList.remove('active')
+                list4.classList.add('active')
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div class="wrapped">
+        <%- include('../partials/nav') %>
+
+        <div class="container content mb-20" style="height: auto !important;">
+            <div class="row">
+                <div class="col-md-12">
+                    <ul class="nav nav-pills" style="margin-bottom:20px;">
+                        <li id="list1" role="presentation" class="active" onclick="check('list1')"> <a href="#">문제번호</a></li>
+                        <li id="list2" role="presentation" onclick="check('list2')"> <a href="/problem/submit" >제출</a></li>
+                        <li id="list3" role="presentation" onclick="check('list3')"> <a href="#">채점현황</a></li>
+                        <li id="list4" role="presentation" onclick="check('list4')"> <a href="#">맞은사람</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-12">
+                    <div class="page-header"><h1><%= problem.problemName %></h1></div>
+                </div>
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <th>
+                                    시간제한
+                                </th>
+                                <th>
+                                    메모리제한
+                                </th>
+                                <th>
+                                    제출
+                                </th>
+                                <th>
+                                    정답
+                                </th>
+                                <th>
+                                    정답비율
+                                </th>
+                            </thead>
+                            <tbody>
+                                <td>1s</td>
+                                <td>1G</td>
+                                <td>1000</td>
+                                <td>100</td>
+                                <td>10 %</td>
+                            </tbody>
+                        </table>
+                </div>
+
+                <div id="problem-body">
+                    <div class="col-md-12">
+                        <section>
+                            <div class="headline"><h2>내용</h2></div>
+                            <div style="font-size:medium; line-height:30px;"><p> <%= problem.problemContent %> </p></div>
+                        </section>
+                    </div>
+                    <div class="col-md-12">
+                        <section>
+                            <div class="headline"><h2>입력 조건</h2></div>
+                            <div style="font-size:medium; line-height:30px;"><p> <%= problem.problemContent %> </p></div>
+                        </section>
+                    </div>
+                    <div class="col-md-12">
+                        <section>
+                            <div class="headline"><h2>출력 조건</h2></div>
+                            <div style="font-size:medium; line-height:30px;"><p>  <%= problem.problemContent %> </p></div>
+                        </section>
+                    </div>
+                    <div class="col-md-12" style="margin-bottom:30px;">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <section>
+                                    <div class="headline"><h2>예제 입력</h2></div>
+                                    <pre class="sampledata text-left">
+<h4><p><%= problem.problemTestInput %></p></h4>
+                                    </pre>
+                                </section>
+                            </div>
+                            <div class="col-md-6">
+                                <section>
+                                    <div class="headline"><h2>예제 출력</h2></div>
+                                    <pre class="sampledata">
+<h4><p><%= problem.problemTestOutput %></p></h4>
+                                    </pre>
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
