@@ -45,17 +45,19 @@
               <% } else { %>
               <% problem.forEach((problem) => { %>
               <tr>
-                <td>  </td>
+                <td>
+                  <div ><%= problem.problemId %></div>
+                </td>
                 <td>
                   <a href="/problem/<%= problem.problemName %>">
-                    <div class="ellipsis"><%= problem.problemName %></div>
+                    <div ><%= problem.problemName %></div>
                   </a>
                 </td>
                 <td>
-                  <div class="ellipsis"><%= problem.problemContent %></div>
+                  <div><%= problem.problemContent %></div>
                 </td>
-                <td>  </td>
-                <td>  </td>
+                <td>  <%= problem.problemSubmitCount %></td>
+                <td>  <%= problem.problemSuccessRatio %></td>
               </tr>
               <% }) %>
               <% } %>

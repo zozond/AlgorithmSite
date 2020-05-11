@@ -3,6 +3,23 @@
 
 <head>
     <%- include('../partials/header') %>
+    <script>
+        function check_Items(){
+            var name = document.getElementById("problemName");
+            var content = document.getElementById("problemContent");
+            var T_input = document.getElementById("problemTestInput");
+            var T_output = document.getElementById("problemTestOutput");
+            var input = document.getElementById("problemInputCase");
+            var output = document.getElementById("problemOutputCase");
+            
+            console.log(name.value);
+            var form = document.getElementById("addproblem_form");
+            if(name.value.length == 0 || content.value.length == 0 || T_input.value.length == 0 || T_output.value.length == 0 || input.value.length == 0 || output.value.length == 0){
+                return;
+            }
+            form.submit();
+        }
+    </script>
 </head>
 
 <body>
@@ -40,10 +57,18 @@
                         <input type="text" placeholder="출력 데이터" class="form-control" name="problemOutputCase" id="problemOutputCase" enctype="multipart/form-data" required>
                     </div>
                     <div class="form-group">
-                        <button class="btn btn-primary" onclick="check_Items()"> 저장 </button>
-                        <button class="btn btn-secondary" onclick="javascript:history.back()"> 뒤로가기 </button>
+                        <label for="problemLimitSecond" class="sr-only">시간 제한</label>
+                        <input type="text" placeholder="시간 제한" class="form-control" name="problemLimitSecond" id="problemLimitSecond" enctype="multipart/form-data" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="problemLimitMemory" class="sr-only">메모리 제한</label>
+                        <input type="text" placeholder="메모리 제한" class="form-control" name="problemLimitMemory" id="problemLimitMemory" enctype="multipart/form-data" required>
                     </div>
                 </form>
+                <div class="form-group">
+                    <button class="btn btn-primary" onclick="check_Items()"> 저장 </button>
+                    <button class="btn btn-secondary" onclick="javascript:history.back()"> 뒤로가기 </button>
+                </div>
             </div>
         </div>
     </div>

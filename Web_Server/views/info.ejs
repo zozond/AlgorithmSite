@@ -11,7 +11,7 @@
         <div class="row">
             <div class="col-md-12">
                 <h1> <%= userinfo.userId %> </h1>
-                <blockquote class="no-mathjax"><%= userinfo.userEmail %></blockquote>
+                <blockquote class="no-mathjax"><%= userinfo.userMessage %></blockquote>
             </div>
 
             <div class="col-md-12">
@@ -24,33 +24,33 @@
                             </thead>
                             <tbody>
                                 <td>랭킹</td>
-                                <td>1</td>
+                                <td><%= userinfo.userRank %></td>
                             </tbody>
                             <tbody>
                                 <td>맞은문제</td>
-                                <td>1</td>
+                                <td><%= userinfo.userSuccess %></td>
                             </tbody>
                             <tbody>
                                 <td>제출</td>
-                                <td>1</td>
+                                <td><%= userinfo.userSuccess + userinfo.userFailed %></td>
                             </tbody>
                             <tbody>
                                 <td>맞았습니다</td>
-                                <td>1</td>
+                                <td><%= userinfo.userSuccess %></td>
                             </tbody>
-                            <tbody>
+                            <!-- <tbody>
                                 <td>출력형식</td>
                                 <td>1</td>
-                            </tbody>
+                            </tbody> -->
                             <tbody>
                                 <td>틀렸습니다</td>
-                                <td>1</td>
+                                <td><%= userinfo.userFailed %></td>
                             </tbody>
-                            <tbody>
+                            <!-- <tbody>
                                 <td>시간초과</td>
                                 <td>1</td>
-                            </tbody>
-                            <tbody>
+                            </tbody> -->
+                            <!-- <tbody>
                                 <td>메모리초과</td>
                                 <td>1</td>
                             </tbody>
@@ -65,14 +65,10 @@
                             <tbody>
                                 <td>컴파일에러</td>
                                 <td>1</td>
-                            </tbody>
+                            </tbody> -->
                             <tbody>
                                 <td>학교/회사</td>
-                                <td>1</td>
-                            </tbody>
-                            <tbody>
-                                <td>랭킹</td>
-                                <td>1</td>
+                                <td><%= userinfo.userCompany %></td>
                             </tbody>
                         </table>
                     </div>
@@ -80,17 +76,17 @@
                         <div class="panel panel-default">
                             <div class="panel-heading"> <h3 class="panel-title">성공</h3> </div>
                             <div class="panel-body">
-                                <span class="problem_number"><a href="#"  style="color: rgb(0, 255, 157)">1000</a></span>
+                                <!-- <span class="problem_number"><a href="#"  style="color: rgb(0, 255, 157)">1000</a></span>
                                 <span class="problem_number"><a href="#">1000</a></span>
-                                <span class="problem_number"><a href="#">1000</a></span>
+                                <span class="problem_number"><a href="#">1000</a></span> -->
                             </div>
                         </div>
                         <div class="panel panel-default">
                             <div class="panel-heading"> <h3 class="panel-title">실패</h3> </div>
                             <div class="panel-body">
-                                <span class="problem_number"><a href="#"  style="color: rgb(255, 60, 0)">1000</a></span>
+                                <!-- <span class="problem_number"><a href="#"  style="color: rgb(255, 60, 0)">1000</a></span>
                                 <span class="problem_number"><a href="#">1000</a></span>
-                                <span class="problem_number"><a href="#">1000</a></span>
+                                <span class="problem_number"><a href="#">1000</a></span> -->
                             </div>
                         </div>
                     </div>

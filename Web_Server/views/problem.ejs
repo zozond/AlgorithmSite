@@ -73,11 +73,11 @@
                                 </th>
                             </thead>
                             <tbody>
-                                <td>1s</td>
-                                <td>1G</td>
-                                <td>1000</td>
-                                <td>100</td>
-                                <td>10 %</td>
+                                <td><%= problem.problemLimitSecond %>s</td>
+                                <td><%= problem.problemLimitMemory %></td>
+                                <td><%= problem.problemSubmitCount %></td>
+                                <td><%= problem.problemSuccess %></td>
+                                <td><%= problem.problemSuccessRatio %></td>
                             </tbody>
                         </table>
                 </div>
@@ -92,13 +92,13 @@
                     <div class="col-md-12">
                         <section>
                             <div class="headline"><h2>입력 조건</h2></div>
-                            <div style="font-size:medium; line-height:30px;"><p> <%= problem.problemContent %> </p></div>
+                            <div style="font-size:medium; line-height:30px;"><p> <%= problem.problemTestInput %> </p></div>
                         </section>
                     </div>
                     <div class="col-md-12">
                         <section>
                             <div class="headline"><h2>출력 조건</h2></div>
-                            <div style="font-size:medium; line-height:30px;"><p>  <%= problem.problemContent %> </p></div>
+                            <div style="font-size:medium; line-height:30px;"><p>  <%= problem.problemTestOutput %> </p></div>
                         </section>
                     </div>
                     <div class="col-md-12" style="margin-bottom:30px;">

@@ -7,9 +7,9 @@ var usp = require('./mongodb/UserSolveProblemSchema');
 var request = require('request');
 const bodyParser = require("body-parser");
 
-// mongoose.dropCollection("problem", (err) => {
-//     console.log(err)
-// })
+// problem.collection.drop();
+// problem.createCollection((err) =>{console.log(err)})
+
 
 app.use(bodyParser.urlencoded({
     extended: true
@@ -47,6 +47,8 @@ app.post('/api/login', function (req, res) {
     ip = ip.replace('::ffff:', '');
     console.log("[/api/login] [" + new Date().toISOString() + "] [" + ip + "] " + "[START] " + JSON.stringify(req.body));
 
+    // user.deleteOne({userId: 'root'}).then(val => console.log(val));
+    // user.deleteOne({userId: 'sjh'}).then(val => console.log(val));
     user.findOne({ userId : req.body.userId }, function (err, resUser) {
         if (err) {
             console.log("[/api/login] [" + new Date().toISOString() + "] [" + ip + "] " + "[END] " + JSON.stringify(err));
@@ -72,6 +74,11 @@ app.post('/api/user/register', function (req, res) {
     ip = ip.replace('::ffff:', '');
     console.log("[/api/user/register] [" + new Date().toISOString() + "] [" + ip + "] " + "[START] " + JSON.stringify(req.body));
 
+    if(req.body.userId.length < 4 || req.body.userPassword < 6 || req.body.userEmail.length < 8){
+        res.send({ isResigtered: false, error: "Correct Form Error!" });
+    }
+
+
     var registerForm = req.body;
     // DB Insert
     user.create(registerForm, function (err) {
@@ -90,7 +97,7 @@ app.post('/api/problem/register', function (req, res) {
     let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     ip = ip.replace('::ffff:', '');
     console.log("[/api/problem/register] [" + new Date().toISOString() + "] [" + ip + "] " + "[START] " + JSON.stringify(req.body));
-
+    
     var form = req.body;
     problem.create(form, function (err) {
         if (err) {
@@ -108,8 +115,10 @@ app.post('/api/problemLists', function (req, res) {
     let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     ip = ip.replace('::ffff:', '');
     console.log("[/api/problemLists] [" + new Date().toISOString() + "] [" + ip + "] " + "[START] " + JSON.stringify(req.body));
+    // problem.find({} , (err, res) => {console.log(res)})
+    // problem.deleteOne({_id : "5eb8f3da991ce440f8407f3d"}).then(val => console.log(val));
 
-    problem.find().select('problemName problemContent').then((resProblem) => {
+    problem.find().select('problemId problemName problemContent problemSubmitCount problemSuccessRatio').then((resProblem) => {
         if( resProblem == null || resProblem.length == 0 ){
             console.log("[/api/problemLists] [" + new Date().toISOString() + "] [" + ip + "] " + "[END] Problem Lists is Empty");
             res.send({isEmpty: true})

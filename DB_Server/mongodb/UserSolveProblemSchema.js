@@ -9,5 +9,12 @@ var Schema = mongoose.Schema({
     totalCount: {type: Number}
 });
 
+Schema.plugin(autoIncrement.plugin, {
+    model:"user_solve_problem",
+    field: 'uspId',
+    startAt: 1,
+    increment: 1
+});
+
 var USP = mongoose.model("user_solve_problem", Schema);
 module.exports = USP;

@@ -29,7 +29,7 @@ app.get('/hello/:nameParam', function (req, res) {
 
 // URL
 app.get('/', function (req, res) {
-    res.render('index', {isRoot: req.session.userId == "root" ? true : false });
+    res.render('index', {isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false});
 });
 
 
@@ -47,7 +47,7 @@ app.get('/info', function (req, res) {
   }, (err, result, body) => {
     if (err) res.send(JSON.stringify(err));
       console.log("[/info] [" + new Date().toISOString() + "] [" + ip + "] " + "[END] " + JSON.stringify(result.body));
-      res.render('info', { userinfo: result.body.userinfo , isRoot: req.session.userId == "root" ? true : false});
+      res.render('info', { userinfo: result.body.userinfo , isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false});
   });
 });
 
@@ -59,11 +59,11 @@ app.get('/logout', function (req, res) {
 
 // Login 
 app.get('/login', function (req, res) {
-    res.render('login', { err: req.query.errQuery, isRoot: req.session.userId == "root" ? true : false});
+    res.render('login', { err: req.query.errQuery, isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false});
 });
 
 app.get('/login/:errParam', function (req, res) {
-    res.render('login', { err: req.params.errParam , isRoot: req.session.userId == "root" ? true : false});
+    res.render('login', { err: req.params.errParam , isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false});
 });
 
 app.post('/login', function (req, res) {
@@ -93,11 +93,11 @@ app.post('/login', function (req, res) {
 
 //Register
 app.get('/register', function (req, res) {
-  res.render('register', { err: req.query.errQuery , isRoot: req.session.userId == "root" ? true : false});
+  res.render('register', { err: req.query.errQuery , isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false});
 });
 
 app.get('/register/:errParam', function (req, res) {
-  res.render('register', { err: req.params.errParam , isRoot: req.session.userId == "root" ? true : false});
+  res.render('register', { err: req.params.errParam , isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false});
 });
 
 app.post('/register', function (req, res) {
@@ -109,8 +109,12 @@ app.post('/register', function (req, res) {
   var form = {};
   form.userId = req.body.userId;
   form.userPassword = req.body.userPassword;
-  form.userName = req.body.userName;
+  form.userMessage = req.body.userMessage;
   form.userEmail = req.body.userEmail;
+  form.userCompany = req.body.userCompany;
+  form.userRank = 0;
+  form.userSuccess = 0;
+  form.userFailed = 0;
 
   request.post({
     headers: { 'Content-Type': 'application/json' },
@@ -143,10 +147,10 @@ app.get('/problemLists', function (req, res) {
 
     if (result.body.isEmpty) {
       console.log("[/problemLists] [" + new Date().toISOString() + "] [" + ip + "] " + "[END] " + JSON.stringify(result.body));
-      res.render("problemLists", { problem: null , isRoot: req.session.userId == "root" ? true : false});
+      res.render("problemLists", { problem: null , isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false});
     } else {
       console.log("[/problemLists] [" + new Date().toISOString() + "] [" + ip + "] " + "[END] " + JSON.stringify(result.body));
-      res.render("problemLists", { problem: result.body.problem, isRoot: req.session.userId == "root" ? true : false});
+      res.render("problemLists", { problem: result.body.problem, isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false});
     }
   });
 });
@@ -155,12 +159,12 @@ app.get('/problemLists', function (req, res) {
 
 // 문제 제출
 app.get('/problem/submit', function (req, res) {
-  res.render("submitProblem", { problem: req.params.problemName , isRoot: req.session.userId == "root" ? true : false});
+  res.render("submitProblem", { problem: req.params.problemName , isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false});
 });
 
 app.get('/problem/submit/:problemName', function (req, res) {
   req.session.currentProblem = req.params.problemName;
-  res.render("submitProblem", { problem: req.params.problemName , isRoot: req.session.userId == "root" ? true : false});
+  res.render("submitProblem", { problem: req.params.problemName , isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false});
 });
 
 app.post('/problem/submit', function (req, res) {
@@ -197,14 +201,16 @@ app.post('/problem/submit', function (req, res) {
 
 // 문제 추가
 app.get('/problem/register', function (req, res) {
-    res.render('addProblem', {isRoot: req.session.userId == "root" ? true : false});
+    res.render('addProblem', {isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false});
 });
 
 app.post('/problem/register', function (req, res) {
   if (req.session.userId == 'root') {
     var form = req.body;
     let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress; ip = ip.replace('::ffff:', '');
-
+    form.problemSubmitCount = 0;
+    form.problemSuccess = 0;
+    form.problemSuccessRatio = "0.0 %";
     request.post({
       headers: { 'Content-Type': 'application/json' },
       url: 'http://127.0.0.1:3100/api/problem/register',
@@ -243,10 +249,10 @@ app.get('/problem/:problemName', function (req, res) {
       res.send("[/problem/" + req.params.problemName + "] [" + new Date().toISOString() + "] [" + ip + "] [ERR] " + JSON.stringify(err));
     } else if (result.body.isEmpty) {
       console.log("[/problem/" + req.params.problemName + "] [" + new Date().toISOString() + "] [" + ip + "] [END] " + JSON.stringify(result.body));
-      res.render('problem', { problem: result.body.problem , isRoot: req.session.userId == "root" ? true : false});
+      res.render('problem', { problem: result.body.problem , isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false});
     } else {
       console.log("[/problem/" + req.params.problemName + "] [" + new Date().toISOString() + "] [" + ip + "] [END] " + JSON.stringify(result.body));
-      res.render('problem', { problem: result.body.problem , isRoot: req.session.userId == "root" ? true : false});
+      res.render('problem', { problem: result.body.problem , isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false});
     }
   });
 });

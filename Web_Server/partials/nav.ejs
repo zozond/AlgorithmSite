@@ -21,19 +21,21 @@
         <!-- <li>
           <a href="#"> 인기 문제 </a>
         </li> -->
-        <li>
-          <a href="/register"> 회원 가입 </a>
-        </li>
+        
+        <% if(isRoot){ %>
+          <li><a href="/problem/register"> 문제 추가하기 </a></li>
+        <% } %>
 
-        <li><a href="/problem/register"> 문제 추가하기 </a></li>
-
-        <% if(!isRoot){ %>
+        <% if(!isUser){ %>
+          <li>
+            <a href="/register"> 회원 가입 </a>
+          </li>
         <li>
           <a href="/login"> 로그인 </a>
         </li>
         <% } %>
 
-        <% if(isRoot){ %>
+        <% if(isUser){ %>
           <li>
             <a href="/info"> 내 정보 </a>
           </li>
