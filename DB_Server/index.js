@@ -7,8 +7,8 @@ var usp = require('./mongodb/UserSolveProblemSchema');
 var request = require('request');
 const bodyParser = require("body-parser");
 
-// problem.collection.drop();
-// problem.createCollection((err) =>{console.log(err)})
+// usp.collection.drop();
+// usp.createCollection((err) =>{console.log(err)})
 
 
 app.use(bodyParser.urlencoded({
@@ -23,19 +23,28 @@ app.use(express.static(__dirname + '/views'));
 app.post('/api/info', function (req, res) {
     let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     ip = ip.replace('::ffff:', '');
-    console.log("[/api/info] [" + new Date().toISOString() + "] [" + ip + "] " + "[START] " + JSON.stringify(req.body));
+    console.log("[/api/info] [" + new Date().toISOString() + "] [" + ip + "] " + "[START] USER FIND " + JSON.stringify(req.body));
 
     user.findOne({ userId : req.body.userId }, function (err, resUser) {
         if (err) {
-            console.log("[/api/info] [" + new Date().toISOString() + "] [" + ip + "] " + "[END] " + JSON.stringify(err));
+            console.log("[/api/info] [" + new Date().toISOString() + "] [" + ip + "] " + "[END] USER FIND " + JSON.stringify(err));
             res.send({ isUser: false, error: err });
         }else{
-            console.log("[/api/info] [" + new Date().toISOString() + "] [" + ip + "] " + "[END] " + JSON.stringify(resUser));
-            if (resUser == null) {
-                res.send({ isUser: false });
-            } else {
-                res.send({ isUser: true, userinfo: resUser });
-            }
+            console.log("[/api/info] [" + new Date().toISOString() + "] [" + ip + "] " + "[END] USER FIND" + JSON.stringify(resUser));
+            console.log("[/api/info] [" + new Date().toISOString() + "] [" + ip + "] " + "[START] USER SOLVE " + JSON.stringify(req.body));
+            usp.find({ userId : req.body.userId }, function (err, resSolve) {
+                if (err) {
+                    console.log("[/api/info] [" + new Date().toISOString() + "] [" + ip + "] " + "[END] USER SOLVE " + JSON.stringify(err));
+                    res.send({ isUser: false, error: err });
+                }else{
+                    console.log("[/api/info] [" + new Date().toISOString() + "] [" + ip + "] " + "[END] USER SOLVE " + JSON.stringify(resSolve));
+                    if (resSolve == null) {
+                        res.send({ isUser: true, userinfo: resUser, solveinfo: [] });
+                    } else {
+                        res.send({ isUser: true, userinfo: resUser, solveinfo: resSolve});
+                    }
+                }
+            });
         }
     });
 });

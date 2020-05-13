@@ -36,7 +36,6 @@ app.get('/', function (req, res) {
   res.render('index', { isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false });
 });
 
-
 // User Info 
 app.get('/info', function (req, res) {
   let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress; ip = ip.replace('::ffff:', '');
@@ -51,7 +50,7 @@ app.get('/info', function (req, res) {
   }, (err, result, body) => {
     if (err) res.send(JSON.stringify(err));
     console.log("[/info] [" + new Date().toISOString() + "] [" + ip + "] " + "[END] " + JSON.stringify(result.body));
-    res.render('info', { userinfo: result.body.userinfo, isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false });
+    res.render('info', { solveinfo: result.body.solveinfo, userinfo: result.body.userinfo, isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false });
   });
 });
 

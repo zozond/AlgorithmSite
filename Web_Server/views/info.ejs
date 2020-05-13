@@ -76,6 +76,12 @@
                         <div class="panel panel-default">
                             <div class="panel-heading"> <h3 class="panel-title">성공</h3> </div>
                             <div class="panel-body">
+                                <% solveinfo.forEach( element => { %>
+                                        <% if(element.state == "Sucess") { %>
+                                    
+                                    <span class="problem_number"><a href="#" style="color: green"> <%= element.problemId %></a></span>
+                                <% } } )%>
+                                
                                 <!-- <span class="problem_number"><a href="#"  style="color: rgb(0, 255, 157)">1000</a></span>
                                 <span class="problem_number"><a href="#">1000</a></span>
                                 <span class="problem_number"><a href="#">1000</a></span> -->
@@ -84,6 +90,10 @@
                         <div class="panel panel-default">
                             <div class="panel-heading"> <h3 class="panel-title">실패</h3> </div>
                             <div class="panel-body">
+                                <% solveinfo.forEach( element => { %>
+                                    <% if(element.state == "Failed") { %>
+                                    <span class="problem_number"><a href="#" style="color: grey"> <%= element.problemId %></a></span>
+                                <% } }) %>
                                 <!-- <span class="problem_number"><a href="#"  style="color: rgb(255, 60, 0)">1000</a></span>
                                 <span class="problem_number"><a href="#">1000</a></span>
                                 <span class="problem_number"><a href="#">1000</a></span> -->
