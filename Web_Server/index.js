@@ -201,7 +201,6 @@ fs.writeFileSync(javafile, req.body.code);
       "Main.java"
     ],
     "Volumes":{
-        "/home/sjh/test/root/1": "/app"
      },
     "WorkingDir": "/app",
     "HostConfig": {
@@ -214,7 +213,7 @@ fs.writeFileSync(javafile, req.body.code);
       "Binds": [path + ":/app"]
     }
   }
-
+dockerForm.Volumes[path] = "/app";
 /*
   request.post({
     headers: { 'Content-Type': 'application/json' },
@@ -287,13 +286,17 @@ fs.writeFileSync(javafile, req.body.code);
           console.log("runtime Error2: " + stderr);
           res.redirect("/problemLists");
         }else{
-          fs.writeFile(path + "/result.txt", stdout, (err) => {
+	  setTimeout(()=>{
+	    fs.writeFile(path + "/result.txt", stdout, (err) => {
             if(err) {
               console.log(err)
             }else{
               console.log(path + "/result.txt saved!");
             }
           })
+
+	  }, 2000);
+	  console.log(stdout);
         }
       });
     }
