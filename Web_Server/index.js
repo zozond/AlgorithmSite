@@ -2,6 +2,11 @@ var express = require('express'); // 설치한 express module을 불러와서 �
 const session = require('express-session');
 var app = express(); //express를 실행하여 app object를 초기화 합니다.
 var request = require('request');
+var fs = require('fs');
+var exec = require("child_process").exec;
+var utf8 = require('utf8');
+const axios = require('axios').default;
+
 const bodyParser = require("body-parser");
 
 app.set('view engine', 'ejs'); // 1
@@ -9,8 +14,8 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 
-app.use(bodyParser.json());
-app.use(express.static(__dirname + '/public'));
+app.use(bodyParser.json({ type: 'application/x-www-form-urlencoded' }));
+app.use("/public", express.static(__dirname + '/public'));
 app.use(express.static(__dirname + '/views'));
 app.use(session({
   secret: "My secret code here!",
@@ -21,15 +26,15 @@ app.use(session({
 
 //ejs test
 app.get('/hello', function (req, res) {
-  res.render('main', { name: req.query.nameQuery , isRoot: req.session.userId == "root" ? true : false});
+  res.render('main', { name: req.query.nameQuery, isRoot: req.session.userId == "root" ? true : false });
 });
 app.get('/hello/:nameParam', function (req, res) {
-  res.render('main', { name: req.params.nameParam , isRoot: req.session.userId == "root" ? true : false});
+  res.render('main', { name: req.params.nameParam, isRoot: req.session.userId == "root" ? true : false });
 });
 
 // URL
 app.get('/', function (req, res) {
-    res.render('index', {isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false});
+  res.render('index', { isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false });
 });
 
 
@@ -46,8 +51,8 @@ app.get('/info', function (req, res) {
     json: true
   }, (err, result, body) => {
     if (err) res.send(JSON.stringify(err));
-      console.log("[/info] [" + new Date().toISOString() + "] [" + ip + "] " + "[END] " + JSON.stringify(result.body));
-      res.render('info', { userinfo: result.body.userinfo , isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false});
+    console.log("[/info] [" + new Date().toISOString() + "] [" + ip + "] " + "[END] " + JSON.stringify(result.body));
+    res.render('info', { userinfo: result.body.userinfo, isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false });
   });
 });
 
@@ -59,18 +64,18 @@ app.get('/logout', function (req, res) {
 
 // Login 
 app.get('/login', function (req, res) {
-    res.render('login', { err: req.query.errQuery, isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false});
+  res.render('login', { err: req.query.errQuery, isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false });
 });
 
 app.get('/login/:errParam', function (req, res) {
-    res.render('login', { err: req.params.errParam , isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false});
+  res.render('login', { err: req.params.errParam, isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false });
 });
 
 app.post('/login', function (req, res) {
   let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress; ip = ip.replace('::ffff:', '');
   console.log("[/login] [" + new Date().toISOString() + "] [" + ip + "] " + "[START] " + JSON.stringify(req.body));
 
-  var form = { userId: req.body.userId, userPassword: req.body.userPassword}
+  var form = { userId: req.body.userId, userPassword: req.body.userPassword }
   request.post({
     headers: { 'Content-Type': 'application/json' },
     url: 'http://127.0.0.1:3100/api/login',
@@ -93,17 +98,17 @@ app.post('/login', function (req, res) {
 
 //Register
 app.get('/register', function (req, res) {
-  res.render('register', { err: req.query.errQuery , isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false});
+  res.render('register', { err: req.query.errQuery, isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false });
 });
 
 app.get('/register/:errParam', function (req, res) {
-  res.render('register', { err: req.params.errParam , isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false});
+  res.render('register', { err: req.params.errParam, isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false });
 });
 
 app.post('/register', function (req, res) {
   let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress; ip = ip.replace('::ffff:', '');
   console.log("[/register] [" + new Date().toISOString() + "] [" + ip + "] " + "[START] " + JSON.stringify(req.body));
-  if(req.body.userPassword != req.body.userVPassword){
+  if (req.body.userPassword != req.body.userVPassword) {
     res.redirect('/register/1');
   }
   var form = {};
@@ -147,10 +152,10 @@ app.get('/problemLists', function (req, res) {
 
     if (result.body.isEmpty) {
       console.log("[/problemLists] [" + new Date().toISOString() + "] [" + ip + "] " + "[END] " + JSON.stringify(result.body));
-      res.render("problemLists", { problem: null , isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false});
+      res.render("problemLists", { problem: null, isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false });
     } else {
       console.log("[/problemLists] [" + new Date().toISOString() + "] [" + ip + "] " + "[END] " + JSON.stringify(result.body));
-      res.render("problemLists", { problem: result.body.problem, isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false});
+      res.render("problemLists", { problem: result.body.problem, isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false });
     }
   });
 });
@@ -159,49 +164,163 @@ app.get('/problemLists', function (req, res) {
 
 // 문제 제출
 app.get('/problem/submit', function (req, res) {
-  res.render("submitProblem", { problem: req.params.problemName , isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false});
+  res.render("submitProblem", { problem: req.params.problemName, isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false });
 });
 
 app.get('/problem/submit/:problemName', function (req, res) {
   req.session.currentProblem = req.params.problemName;
-  res.render("submitProblem", { problem: req.params.problemName , isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false});
+  res.render("submitProblem", { problem: req.params.problemName, isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false });
 });
 
 app.post('/problem/submit', function (req, res) {
-  var form = {};
-  form.userId = req.session.userId;
-  form.problemName = req.session.currentProblem;
-  form.code = req.body.code;
+/*
+  var path = "C:/Users/admin/Desktop/user/" + req.session.userId + "/" + req.session.currentProblemId;
 
-  var pform = {};
-  pform.problemName = req.session.currentProblem;
+  fs.writeFileSync(path + "/Main.java", req.body.code, (err) => {
+    if (err) {
+      console.log(err)
+    } else {
+      console.log(path + "/Main.java saved!");
+    }
+  })
+
+  var dockerForm =
+  {
+    "Image": "openjdk:8-jdk",
+    "AttachStdin" : true,
+    "Cmd": [
+      "javac",
+      "Main.java"
+    ],
+    "WorkingDir": "/app",
+    "HostConfig": {
+      "Memory": 134217728,
+      "CpuPeriod": 100000,
+      "CpuQuota": 100000,
+      "Dns": [
+        "8.8.8.8"
+      ],
+      "Binds": [path + ":/app"]
+    }
+  }
+
+  console.log(JSON.stringify(dockerForm))
+  // dockerForm.Volumes = {path : "/app"};
   request.post({
     headers: { 'Content-Type': 'application/json' },
-    url: 'http://127.0.0.1:3100/api/problem',
-    body: pform,
+    url: 'http://localhost:2375/containers/create',
+    body: dockerForm,
     json: true
   }, (err, result, body) => {
-    if (err) {
-      res.send("[/problem/submit" +  req.session.currentProblem + "] [" + new Date().toISOString() + "] [" + ip + "] [ERR] " + JSON.stringify(err));
-    }
-    form.problemInputCase = result.body.problem.problemInputCase;
-    form.problemOutputCase = result.body.problem.problemOutputCase;
-    console.log(form);
+    if (err) console.log(err);
+    console.log(JSON.stringify(body));
+    var Id = body.Id;
+
     request.post({
-      headers: { 'content-type': 'application/json' },
-      url: 'http://127.0.0.1:8080/compile',
-      body: form,
+      headers: { 'Content-Type': 'application/json' },
+      url: 'http://localhost:2375/containers/' + Id + "/start",
       json: true
-    }, (err, result, body) => {
-      if (err) res.send(JSON.stringify(err));
-      res.redirect('/');
-    });
+    }, (err, result, body) => { 
+        dockerForm.Cmd = ["java", "Main"];
+        request.post({
+          headers: { 'Content-Type': 'application/json' },
+          url: 'http://localhost:2375/containers/create',
+          body: dockerForm,
+          json: true
+        }, (err, result, body) => {
+          var Id2 = body.Id;
+          console.log(Id2);
+          request.post({
+            headers: { 'Content-Type': 'application/json' },
+            url: 'http://localhost:2375/containers/' + Id2 + "/start",
+          }, (err, response, body) => {
+            console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
+            res.redirect("/");
+          });
+        });
+      })
   });
+  */
+  
+  /* CLI 조작 */
+  var form = {};
+  form.userId = req.session.userId;
+  form.problemId = req.session.currentProblemId;
+  form.code = req.body.code;
+  form.open = req.body.open;
+
+  var path = "C:/Users/admin/Desktop/user/" + req.session.userId +"/" + req.session.currentProblemId;
+
+  fs.writeFileSync(path + "/Main.java", req.body.code, (err) => {
+    if(err) {
+      console.log(err)
+    }else{
+      console.log(path + "/Main.java saved!");
+    }
+  })
+
+  exec('docker run --rm --cpus="1" -m=128m -v ' + path +':/app -w /app openjdk:8-jdk javac Main.java', function (err, stdout, stderr) {
+    if(err) {
+      console.log("컴파일 에러");
+      res.redirect("/problemLists");
+    }else if(stderr) {
+      console.log("컴파일 에러1")
+      res.redirect("/problemLists");
+    }else{
+      exec('docker run --rm --cpus="1" -m=128m -v ' + path +':/app -w /app openjdk:8-jdk bash -c "java Main <<EOF\'\nhello\nEOF\'"', function (err, stdout, stderr) {
+      // exec('docker run --rm --cpus="1" -m=128m -v ' + path +':/app -w /app openjdk:8-jdk java Main', function (err, stdout, stderr) {
+        if(err){
+          console.log(err);
+          res.redirect("/problemLists");
+        } else if(stderr) {
+          console.log(stderr);
+          res.redirect("/problemLists");
+        }else{
+          fs.writeFile(path + "/result.txt", stdout, (err) => {
+            if(err) {
+              console.log(err)
+            }else{
+              console.log(path + "/result.txt saved!");
+            }
+          })
+          res.send("성공");
+        }
+      });
+    }
+  });
+
+
+// Spring REST API Server
+  // res.send(JSON.stringify(form));
+  // var pform = {};
+  // pform.problemName = req.session.currentProblem;
+  // request.post({
+  //   headers: { 'Content-Type': 'application/json' },
+  //   url: 'http://127.0.0.1:3100/api/problem',
+  //   body: pform,
+  //   json: true
+  // }, (err, result, body) => {
+  //   if (err) {
+  //     res.send("[/problem/submit" +  req.session.currentProblem + "] [" + new Date().toISOString() + "] [" + ip + "] [ERR] " + JSON.stringify(err));
+  //   }
+  //   form.problemInputCase = result.body.problem.problemInputCase;
+  //   form.problemOutputCase = result.body.problem.problemOutputCase;
+  //   console.log(form);
+  //   request.post({
+  //     headers: { 'content-type': 'application/json' },
+  //     url: 'http://127.0.0.1:8080/compile',
+  //     body: form,
+  //     json: true
+  //   }, (err, result, body) => {
+  //     if (err) res.send(JSON.stringify(err));
+  //     res.redirect('/');
+  //   });
+  // });
 });
 
 // 문제 추가
 app.get('/problem/register', function (req, res) {
-    res.render('addProblem', {isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false});
+  res.render('addProblem', { isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false });
 });
 
 app.post('/problem/register', function (req, res) {
@@ -232,7 +351,6 @@ app.post('/problem/register', function (req, res) {
   }
 });
 
-
 // 문제 보기
 app.get('/problem/:problemName', function (req, res) {
   let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress; ip = ip.replace('::ffff:', '');
@@ -249,10 +367,12 @@ app.get('/problem/:problemName', function (req, res) {
       res.send("[/problem/" + req.params.problemName + "] [" + new Date().toISOString() + "] [" + ip + "] [ERR] " + JSON.stringify(err));
     } else if (result.body.isEmpty) {
       console.log("[/problem/" + req.params.problemName + "] [" + new Date().toISOString() + "] [" + ip + "] [END] " + JSON.stringify(result.body));
-      res.render('problem', { problem: result.body.problem , isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false});
+      req.session.currentProblemId = result.body.problem.problemId;
+      res.render('problem', { problem: result.body.problem, isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false });
     } else {
+      req.session.currentProblemId = result.body.problem.problemId;
       console.log("[/problem/" + req.params.problemName + "] [" + new Date().toISOString() + "] [" + ip + "] [END] " + JSON.stringify(result.body));
-      res.render('problem', { problem: result.body.problem , isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false});
+      res.render('problem', { problem: result.body.problem, isRoot: req.session.userId == "root" ? true : false, isUser: req.session.userId != null ? true : false });
     }
   });
 });
