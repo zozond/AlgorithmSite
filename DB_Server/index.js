@@ -7,8 +7,8 @@ var usp = require('./mongodb/UserSolveProblemSchema');
 var request = require('request');
 const bodyParser = require("body-parser");
 
-// usp.collection.drop();
-// usp.createCollection((err) =>{console.log(err)})
+//usp.collection.drop();
+//usp.createCollection((err) =>{console.log(err)})
 
 
 app.use(bodyParser.urlencoded({
