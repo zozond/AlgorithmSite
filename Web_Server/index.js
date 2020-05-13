@@ -74,25 +74,29 @@ app.post('/login', function (req, res) {
   let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress; ip = ip.replace('::ffff:', '');
   console.log("[/login] [" + new Date().toISOString() + "] [" + ip + "] " + "[START] " + JSON.stringify(req.body));
 
-  var form = { userId: req.body.userId, userPassword: req.body.userPassword }
-  request.post({
-    headers: { 'Content-Type': 'application/json' },
-    url: 'http://127.0.0.1:3100/api/login',
-    body: form,
-    json: true
-  }, (err, result, body) => {
-    if (err) res.send("get err");
 
-    if (result.body.isUser) {
-      req.session.isLogined = true;
-      req.session.userId = req.body.userId;
-      console.log("[/login] [" + new Date().toISOString() + "] [" + ip + "] " + "[END] " + JSON.stringify(result.body));
-      res.redirect("/");
-    } else {
-      console.log("[/login] [" + new Date().toISOString() + "] [" + ip + "] " + "[ERR] " + JSON.stringify(result.body));
-      res.redirect('/login/1');
-    }
-  });
+  // setTimeout(() => {
+    var form = { userId: req.body.userId, userPassword: req.body.userPassword }
+    request.post({
+      headers: { 'Content-Type': 'application/json' },
+      url: 'http://127.0.0.1:3100/api/login',
+      body: form,
+      json: true
+    }, (err, result, body) => {
+      if (err) res.send("get err");
+  
+      if (result.body.isUser) {
+        req.session.isLogined = true;
+        req.session.userId = req.body.userId;
+        console.log("[/login] [" + new Date().toISOString() + "] [" + ip + "] " + "[END] " + JSON.stringify(result.body));
+        res.redirect("/");
+      } else {
+        console.log("[/login] [" + new Date().toISOString() + "] [" + ip + "] " + "[ERR] " + JSON.stringify(result.body));
+        res.redirect('/login/1');
+      }
+    });
+  // }, 5000);
+ 
 });
 
 //Register
@@ -120,21 +124,23 @@ app.post('/register', function (req, res) {
   form.userSuccess = 0;
   form.userFailed = 0;
 
-  request.post({
-    headers: { 'Content-Type': 'application/json' },
-    url: 'http://127.0.0.1:3100/api/user/register',
-    body: form,
-    json: true
-  }, (err, result, body) => {
-    if (err) res.send("[/register] [" + new Date().toISOString() + "] [" + ip + "] [ERR] " + JSON.stringify(err));
-    else if (result.body.isResigtered) {
-      console.log("[/register] [" + new Date().toISOString() + "] [" + ip + "] " + "[END] " + JSON.stringify(result.body));
-      res.redirect('/');
-    } else {
-      console.log("[/register] [" + new Date().toISOString() + "] [" + ip + "] " + "[END] " + JSON.stringify(result.body));
-      res.redirect('/register/1');
-    }
-  });
+  setTimeout(() => {
+    request.post({
+      headers: { 'Content-Type': 'application/json' },
+      url: 'http://127.0.0.1:3100/api/user/register',
+      body: form,
+      json: true
+    }, (err, result, body) => {
+      if (err) res.send("[/register] [" + new Date().toISOString() + "] [" + ip + "] [ERR] " + JSON.stringify(err));
+      else if (result.body.isResigtered) {
+        console.log("[/register] [" + new Date().toISOString() + "] [" + ip + "] " + "[END] " + JSON.stringify(result.body));
+        res.redirect('/');
+      } else {
+        console.log("[/register] [" + new Date().toISOString() + "] [" + ip + "] " + "[END] " + JSON.stringify(result.body));
+        res.redirect('/register/1');
+      }
+    });
+  }, 5000)  
 });
 
 // 문제 리스트
