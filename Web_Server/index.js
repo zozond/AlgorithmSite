@@ -287,47 +287,42 @@ dockerForm.Volumes[path] = "/app";
           res.redirect("/problemLists");
         }else{
 	  setTimeout(()=>{
-	    fs.writeFile(path + "/result.txt", stdout, (err) => {
-            if(err) {
-              console.log(err)
-            }else{
-              console.log(path + "/result.txt saved!");
-            }
-          })
+	      fs.writeFile(path + "/result.txt", stdout, (err) => {
+              if(err) {
+                console.log(err)
+              }else{
+                console.log(path + "/result.txt saved!");
+               	var form = {};
+		form.userId = req.session.userId;
+		form.problemId =req.session.currentProblemId;
+		if(stdout == 100 || stdout == "100") 
+			form.state = "Success";
+		else
+			form.state = "Failed";
+		form.solveCount = 100;
+		form.totalCount = 100;
 
-	  }, 2000);
+		console.log(form);
+                request.post({
+      headers: { 'Content-Type': 'application/json' },
+      url: 'http://127.0.0.1:3100/api/solve',
+      body: form,
+      json: true
+    }, (err, result, body) => {
+      if (err) res.send("[/solve] [" + new Date().toISOString() + "] [ERR] " + JSON.stringify(err));
+      else {
+        console.log("[/solve] [" + new Date().toISOString() + "] [END] " + JSON.stringify(result.body));
+      }
+    });
+              }
+            })
+          }, 2000);
 	  console.log(stdout);
         }
       });
     }
   });
  res.redirect("/");
-// Spring REST API Server
-  // res.send(JSON.stringify(form));
-  // var pform = {};
-  // pform.problemName = req.session.currentProblem;
-  // request.post({
-  //   headers: { 'Content-Type': 'application/json' },
-  //   url: 'http://127.0.0.1:3100/api/problem',
-  //   body: pform,
-  //   json: true
-  // }, (err, result, body) => {
-  //   if (err) {
-  //     res.send("[/problem/submit" +  req.session.currentProblem + "] [" + new Date().toISOString() + "] [" + ip + "] [ERR] " + JSON.stringify(err));
-  //   }
-  //   form.problemInputCase = result.body.problem.problemInputCase;
-  //   form.problemOutputCase = result.body.problem.problemOutputCase;
-  //   console.log(form);
-  //   request.post({
-  //     headers: { 'content-type': 'application/json' },
-  //     url: 'http://127.0.0.1:8080/compile',
-  //     body: form,
-  //     json: true
-  //   }, (err, result, body) => {
-  //     if (err) res.send(JSON.stringify(err));
-  //     res.redirect('/');
-  //   });
-  // });
 });
 
 // 문제 추가

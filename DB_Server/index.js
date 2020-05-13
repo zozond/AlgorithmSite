@@ -167,51 +167,39 @@ app.post('/api/problem', function (req, res) {
 });
 
 // 유저가 문제를 풀었을 때
-app.post('/api/solve/update', function (req, res) {
+app.post('/api/solve', function (req, res) {
     let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     ip = ip.replace('::ffff:', '');
-    console.log("[/api/solve/update] [" + new Date().toISOString() + "] [" + ip + "] " + "[START] " + JSON.stringify(req.body));
+    console.log("[/api/solve] [" + new Date().toISOString() + "] [" + ip + "] " + "[START] " + JSON.stringify(req.body));
     
-    usp.findOne({ userId: req.body.userId, problemName: req.body.problemName }, function (err, resSolve) {
+
+    usp.findOne({ userId: req.body.userId, problemId: req.body.problemId }, function (err, resSolve) {
         if (err) {
-            console.log("[/api/solve/update] [" + new Date().toISOString() + "] [" + ip + "] " + "[ERR] " + JSON.stringify(req.body));
+            console.log("[/api/solve] [" + new Date().toISOString() + "] [" + ip + "] " + "[ERR] " + JSON.stringify(req.body));
             res.send(true);
         }else{
             if(resSolve == null){                
                 var form = req.body;
                 usp.create(form, function (err) {
                     if (err) {
-                        console.log("[/api/solve/update] [" + new Date().toISOString() + "] [" + ip + "] " + "[ERR] Created " + JSON.stringify(req.body));
+                        console.log("[/api/solve] [" + new Date().toISOString() + "] [" + ip + "] " + "[ERR] Created " + JSON.stringify(req.body));
                         res.send(false);
                     } else {
-                        console.log("[/api/solve/update] [" + new Date().toISOString() + "] [" + ip + "] " + "[END] Created " + JSON.stringify(req.body));
+                        console.log("[/api/solve] [" + new Date().toISOString() + "] [" + ip + "] " + "[END] Created " + JSON.stringify(req.body));
                         res.send(true);
                     }
                 })
             }else{
-                if(resSolve.state == "finish"){
                     console.log(resSolve)
                     usp.findOneAndUpdate({ userId: req.body.userId, problemName: req.body.problemName }, {solveCount: req.body.solveCount, state: req.body.state}, function (err, resProblem) {
                         if (err) {
-                            console.log("[/api/solve/update] [" + new Date().toISOString() + "] [" + ip + "] " + "[ERR] " + JSON.stringify(req.body));
+                            console.log("[/api/solve] [" + new Date().toISOString() + "] [" + ip + "] " + "[ERR] " + JSON.stringify(req.body));
                             res.send(false);
                         }else{        
-                            console.log("[/api/solve/update] [" + new Date().toISOString() + "] [" + ip + "] " + "[END] " + JSON.stringify(resProblem));
+                            console.log("[/api/solve] [" + new Date().toISOString() + "] [" + ip + "] " + "[END] " + JSON.stringify(resProblem));
                             res.send(true);
                         }
                     });
-                }else{
-                    console.log(resSolve)
-                    usp.findOneAndUpdate({ userId: req.body.userId, problemName: req.body.problemName }, {solveCount: resSolve.solveCount + req.body.solveCount, state: req.body.state}, function (err, resProblem) {
-                        if (err) {
-                            console.log("[/api/solve/update] [" + new Date().toISOString() + "] [" + ip + "] " + "[ERR] " + JSON.stringify(req.body));
-                            res.send(false);
-                        }else{        
-                            console.log("[/api/solve/update] [" + new Date().toISOString() + "] [" + ip + "] " + "[END] " + JSON.stringify(resProblem));
-                            res.send(true);
-                        }
-                    });
-                }
             }
         }
     });
