@@ -4,7 +4,6 @@ var app = express(); //express를 실행하여 app object를 초기화 합니다
 var request = require('request');
 var fs = require('fs');
 var exec = require("child_process").exec;
-var utf8 = require('utf8');
 const axios = require('axios').default;
 
 const bodyParser = require("body-parser");
@@ -173,17 +172,20 @@ app.get('/problem/submit/:problemName', function (req, res) {
 });
 
 app.post('/problem/submit', function (req, res) {
-/*
-  var path = "C:/Users/admin/Desktop/user/" + req.session.userId + "/" + req.session.currentProblemId;
 
-  fs.writeFileSync(path + "/Main.java", req.body.code, (err) => {
+
+  var path = "/home/sjh/test/" + req.session.userId + "/" + req.session.currentProblemId;
+var javafile = path + "/Main.java";
+fs.writeFileSync(javafile, req.body.code);
+/*
+  fs.writeFileSync(javafile, req.body.code, (err) => {
     if (err) {
       console.log(err)
     } else {
       console.log(path + "/Main.java saved!");
     }
   })
-
+*/
   var dockerForm =
   {
     "Image": "openjdk:8-jdk",
@@ -192,6 +194,9 @@ app.post('/problem/submit', function (req, res) {
       "javac",
       "Main.java"
     ],
+    "Volumes":{
+        "/home/sjh/test/root/1": "/app"
+     },
     "WorkingDir": "/app",
     "HostConfig": {
       "Memory": 134217728,
@@ -204,11 +209,10 @@ app.post('/problem/submit', function (req, res) {
     }
   }
 
-  console.log(JSON.stringify(dockerForm))
-  // dockerForm.Volumes = {path : "/app"};
+/*
   request.post({
     headers: { 'Content-Type': 'application/json' },
-    url: 'http://localhost:2375/containers/create',
+    url: 'http://192.168.164.137:2375/containers/create',
     body: dockerForm,
     json: true
   }, (err, result, body) => {
@@ -218,13 +222,13 @@ app.post('/problem/submit', function (req, res) {
 
     request.post({
       headers: { 'Content-Type': 'application/json' },
-      url: 'http://localhost:2375/containers/' + Id + "/start",
+      url: 'http://192.168.164.137:2375/containers/' + Id + "/start",
       json: true
     }, (err, result, body) => { 
         dockerForm.Cmd = ["java", "Main"];
         request.post({
           headers: { 'Content-Type': 'application/json' },
-          url: 'http://localhost:2375/containers/create',
+          url: 'http://192.168.164.137:2375/containers/create',
           body: dockerForm,
           json: true
         }, (err, result, body) => {
@@ -232,7 +236,7 @@ app.post('/problem/submit', function (req, res) {
           console.log(Id2);
           request.post({
             headers: { 'Content-Type': 'application/json' },
-            url: 'http://localhost:2375/containers/' + Id2 + "/start",
+            url: 'http://192.168.164.137:2375/containers/' + Id2 + "/start",
           }, (err, response, body) => {
             console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
             res.redirect("/");
@@ -240,9 +244,10 @@ app.post('/problem/submit', function (req, res) {
         });
       })
   });
-  */
   
+  */
   /* CLI 조작 */
+/*
   var form = {};
   form.userId = req.session.userId;
   form.problemId = req.session.currentProblemId;
@@ -258,22 +263,22 @@ app.post('/problem/submit', function (req, res) {
       console.log(path + "/Main.java saved!");
     }
   })
-
-  exec('docker run --rm --cpus="1" -m=128m -v ' + path +':/app -w /app openjdk:8-jdk javac Main.java', function (err, stdout, stderr) {
+*/
+  exec('docker run --rm --cpus="1" -m=128m -v ' + path +':/app -w /app openjdk:8-jdk javac Exam.java', function (err, stdout, stderr) {
     if(err) {
-      console.log("컴파일 에러");
+      console.log("컴파일 에러 : " + err);
       res.redirect("/problemLists");
     }else if(stderr) {
-      console.log("컴파일 에러1")
+      console.log("compile err : " + stderr)
       res.redirect("/problemLists");
     }else{
-      exec('docker run --rm --cpus="1" -m=128m -v ' + path +':/app -w /app openjdk:8-jdk bash -c "java Main <<EOF\'\nhello\nEOF\'"', function (err, stdout, stderr) {
+      exec('docker run --rm --cpus="1" -m=128m -v ' + path +':/app -w /app openjdk:8-jdk java Exam', function (err, stdout, stderr) {
       // exec('docker run --rm --cpus="1" -m=128m -v ' + path +':/app -w /app openjdk:8-jdk java Main', function (err, stdout, stderr) {
         if(err){
-          console.log(err);
+          console.log("runtime Error: " + err);
           res.redirect("/problemLists");
         } else if(stderr) {
-          console.log(stderr);
+          console.log("runtime Error2: " + stderr);
           res.redirect("/problemLists");
         }else{
           fs.writeFile(path + "/result.txt", stdout, (err) => {
@@ -283,13 +288,11 @@ app.post('/problem/submit', function (req, res) {
               console.log(path + "/result.txt saved!");
             }
           })
-          res.send("성공");
         }
       });
     }
   });
-
-
+ res.redirect("/");
 // Spring REST API Server
   // res.send(JSON.stringify(form));
   // var pform = {};

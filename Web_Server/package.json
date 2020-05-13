@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -11,15 +12,12 @@
   "dependencies": {
     "axios": "^0.19.2",
     "body-parser": "^1.19.0",
-    "compile-run": "^2.3.2",
     "ejs": "^3.0.1",
     "express": "^4.17.1",
     "express-session": "^1.17.0",
-    "java": "^0.12.1",
     "mongoose": "^5.9.5",
     "nodemon": "^2.0.2",
-    "request": "^2.88.2",
-    "utf8": "^3.0.0"
+    "request": "^2.88.2"
   },
   "devDependencies": {
     "@types/ace": "0.0.43",
